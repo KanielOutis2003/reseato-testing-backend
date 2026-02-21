@@ -1,0 +1,1 @@
+//# sourceMappingURL=roleCheck.d.ts.map
