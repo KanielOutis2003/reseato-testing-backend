@@ -28,6 +28,8 @@ if (process.env.DATABASE_URL) {
         max: 20,
         idleTimeoutMillis: 30000,
         connectionTimeoutMillis: 2000,
+        // @ts-ignore - Force IPv4 for Supabase on Render
+        family: 4,
     });
 }
 else {
@@ -44,6 +46,8 @@ else {
         max: 20,
         idleTimeoutMillis: 30000,
         connectionTimeoutMillis: 2000,
+        // @ts-ignore - Force IPv4 for Supabase on Render
+        family: 4,
     });
 }
 pool.on('connect', () => {
