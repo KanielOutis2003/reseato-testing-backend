@@ -1,5 +1,5 @@
 import pool from '../config/database';
-import { Restaurant, RestaurantFilters } from '../../../shared/types';
+import { Restaurant, RestaurantFilters } from '../types/shared';
 import { AppError } from '../middleware/errorHandler';
 
 export class RestaurantService {

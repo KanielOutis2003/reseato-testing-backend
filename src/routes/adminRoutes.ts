@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { authenticateToken, authorizeRoles } from '../middleware/auth';
 import adminController from '../controllers/adminController';
-import { UserRole } from '../../../shared/types';
+import { UserRole } from '../types/shared';
 
 const router = Router();
 

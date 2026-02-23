@@ -7,7 +7,7 @@ exports.createReservationValidation = void 0;
 const express_validator_1 = require("express-validator");
 const reservationService_1 = __importDefault(require("../services/reservationService"));
 const errorHandler_1 = require("../middleware/errorHandler");
-const types_1 = require("../../../shared/types");
+const shared_1 = require("../types/shared");
 exports.createReservationValidation = [
     (0, express_validator_1.body)('restaurantId').isUUID().withMessage('Valid restaurant ID required'),
     (0, express_validator_1.body)('reservationDate').isISO8601().withMessage('Valid date required'),
@@ -75,7 +75,7 @@ class ReservationController {
         });
         this.updateReservationStatus = (0, errorHandler_1.asyncHandler)(async (req, res) => {
             const { status } = req.body;
-            if (!Object.values(types_1.ReservationStatus).includes(status)) {
+            if (!Object.values(shared_1.ReservationStatus).includes(status)) {
                 return res.status(400).json({
                     success: false,
                     error: 'Invalid status'

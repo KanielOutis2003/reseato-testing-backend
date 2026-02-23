@@ -1,4 +1,4 @@
-import { Restaurant, RestaurantFilters } from '../../../shared/types';
+import { Restaurant, RestaurantFilters } from '../types/shared';
 export declare class RestaurantService {
     getAllRestaurants(filters?: RestaurantFilters): Promise<Restaurant[]>;
     getRestaurantById(id: string): Promise<Restaurant | null>;

@@ -3,7 +3,7 @@ import { body, validationResult } from 'express-validator';
 import { AuthRequest } from '../middleware/auth';
 import reservationService from '../services/reservationService';
 import { asyncHandler } from '../middleware/errorHandler';
-import { ReservationStatus } from '../../../shared/types';
+import { ReservationStatus } from '../types/shared';
 
 export const createReservationValidation = [
   body('restaurantId').isUUID().withMessage('Valid restaurant ID required'),

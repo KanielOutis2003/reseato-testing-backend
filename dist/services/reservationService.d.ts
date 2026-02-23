@@ -1,4 +1,4 @@
-import { Reservation, ReservationStatus, CreateReservationDTO, TimeSlot } from '../../../shared/types';
+import { Reservation, ReservationStatus, CreateReservationDTO, TimeSlot } from '../types/shared';
 export declare class ReservationService {
     createReservation(customerId: string, data: CreateReservationDTO): Promise<Reservation>;
     getAvailableTimeSlots(restaurantId: string, date: string, guestCount: number): Promise<TimeSlot[]>;

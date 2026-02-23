@@ -3,7 +3,7 @@ import { body, validationResult } from 'express-validator';
 import { AuthRequest } from '../middleware/auth';
 import authService from '../services/authService';
 import { asyncHandler } from '../middleware/errorHandler';
-import { UserRole } from '../../../shared/types';
+import { UserRole } from '../types/shared';
 
 export const registerValidation = [
   body('email').isEmail().normalizeEmail().withMessage('Valid email is required'),

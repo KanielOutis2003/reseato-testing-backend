@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import pool from '../config/database';
-import { User, UserRole } from '../../../shared/types';
+import { User, UserRole } from '../types/shared';
 import { AppError } from '../middleware/errorHandler';
 
 interface RegisterData {

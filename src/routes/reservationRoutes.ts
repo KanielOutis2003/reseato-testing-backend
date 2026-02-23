@@ -1,7 +1,7 @@
 import express from 'express';
 import reservationController, { createReservationValidation } from '../controllers/reservationController';
 import { authenticateToken, authorizeRoles } from '../middleware/auth';
-import { UserRole } from '../../../shared/types';
+import { UserRole } from '../types/shared';
 
 const router = express.Router();
 

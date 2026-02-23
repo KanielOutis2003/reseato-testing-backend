@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const database_1 = __importDefault(require("../config/database"));
-const types_1 = require("../../../shared/types");
+const shared_1 = require("../types/shared");
 const seed = async () => {
     const client = await database_1.default.connect();
     try {
@@ -20,7 +20,7 @@ const seed = async () => {
                 password: passwordHash,
                 firstName: 'Admin',
                 lastName: 'User',
-                role: types_1.UserRole.ADMIN,
+                role: shared_1.UserRole.ADMIN,
                 phone: '09123456789'
             },
             {
@@ -28,7 +28,7 @@ const seed = async () => {
                 password: passwordHash,
                 firstName: 'Jane',
                 lastName: 'Customer',
-                role: types_1.UserRole.CUSTOMER,
+                role: shared_1.UserRole.CUSTOMER,
                 phone: '09111111111'
             }
         ];
@@ -284,7 +284,7 @@ const seed = async () => {
             // 3. Create Vendor User for this Restaurant
             const userRes = await client.query(`INSERT INTO users (email, password_hash, first_name, last_name, role, phone)
          VALUES ($1, $2, $3, $4, $5, $6)
-         RETURNING id`, [rData.owner.email, passwordHash, rData.owner.firstName, rData.owner.lastName, types_1.UserRole.VENDOR, '09000000000']);
+         RETURNING id`, [rData.owner.email, passwordHash, rData.owner.firstName, rData.owner.lastName, shared_1.UserRole.VENDOR, '09000000000']);
             const ownerId = userRes.rows[0].id;
             console.log(`✅ Created vendor: ${rData.owner.email}`);
             // 4. Create Restaurant linked to this Owner

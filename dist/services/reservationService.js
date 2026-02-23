@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ReservationService = void 0;
 const database_1 = __importDefault(require("../config/database"));
-const types_1 = require("../../../shared/types");
+const shared_1 = require("../types/shared");
 const errorHandler_1 = require("../middleware/errorHandler");
 const date_fns_1 = require("date-fns");
 const notificationService_1 = __importDefault(require("./notificationService"));
@@ -39,7 +39,7 @@ class ReservationService {
         const result = await database_1.default.query(`INSERT INTO reservations 
        (customer_id, restaurant_id, table_id, reservation_date, reservation_time, guest_count, special_notes, status)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-       RETURNING *`, [customerId, restaurantId, availableTable.id, reservationDate, reservationTime, guestCount, specialNotes, types_1.ReservationStatus.PENDING]);
+       RETURNING *`, [customerId, restaurantId, availableTable.id, reservationDate, reservationTime, guestCount, specialNotes, shared_1.ReservationStatus.PENDING]);
         const reservation = result.rows[0];
         // Create pending payment record
         await database_1.default.query(`INSERT INTO payments (reservation_id, amount, payment_method, payment_status)
@@ -122,7 +122,7 @@ class ReservationService {
         }
         const reservation = result.rows[0];
         // Notify Customer about status change
-        const statusMsg = status === types_1.ReservationStatus.CONFIRMED
+        const statusMsg = status === shared_1.ReservationStatus.CONFIRMED
             ? 'Your reservation has been confirmed!'
             : `Your reservation status has been updated to ${status}.`;
         await notificationService_1.default.createNotification(reservation.customer_id, 'Reservation Update', statusMsg);
@@ -134,7 +134,7 @@ class ReservationService {
         if (check.rows.length === 0) {
             throw new errorHandler_1.AppError('Reservation not found or unauthorized', 404);
         }
-        return this.updateReservationStatus(reservationId, types_1.ReservationStatus.CANCELLED);
+        return this.updateReservationStatus(reservationId, shared_1.ReservationStatus.CANCELLED);
     }
     async findAvailableTable(restaurantId, date, time, guestCount) {
         // Find tables that fit capacity and are NOT already booked at this time

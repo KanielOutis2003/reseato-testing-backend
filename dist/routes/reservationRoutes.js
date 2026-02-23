@@ -39,16 +39,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const reservationController_1 = __importStar(require("../controllers/reservationController"));
 const auth_1 = require("../middleware/auth");
-const types_1 = require("../../../shared/types");
+const shared_1 = require("../types/shared");
 const router = express_1.default.Router();
 // Public route
 router.get('/availability', reservationController_1.default.getAvailableTimeSlots);
 // Customer routes
-router.post('/', auth_1.authenticateToken, (0, auth_1.authorizeRoles)(types_1.UserRole.CUSTOMER), reservationController_1.createReservationValidation, reservationController_1.default.createReservation);
-router.get('/my-reservations', auth_1.authenticateToken, (0, auth_1.authorizeRoles)(types_1.UserRole.CUSTOMER), reservationController_1.default.getMyReservations);
-router.put('/:id/cancel', auth_1.authenticateToken, (0, auth_1.authorizeRoles)(types_1.UserRole.CUSTOMER), reservationController_1.default.cancelReservation);
+router.post('/', auth_1.authenticateToken, (0, auth_1.authorizeRoles)(shared_1.UserRole.CUSTOMER), reservationController_1.createReservationValidation, reservationController_1.default.createReservation);
+router.get('/my-reservations', auth_1.authenticateToken, (0, auth_1.authorizeRoles)(shared_1.UserRole.CUSTOMER), reservationController_1.default.getMyReservations);
+router.put('/:id/cancel', auth_1.authenticateToken, (0, auth_1.authorizeRoles)(shared_1.UserRole.CUSTOMER), reservationController_1.default.cancelReservation);
 // Vendor routes
-router.get('/restaurant/:restaurantId', auth_1.authenticateToken, (0, auth_1.authorizeRoles)(types_1.UserRole.VENDOR), reservationController_1.default.getRestaurantReservations);
-router.put('/:id/status', auth_1.authenticateToken, (0, auth_1.authorizeRoles)(types_1.UserRole.VENDOR), reservationController_1.default.updateReservationStatus);
+router.get('/restaurant/:restaurantId', auth_1.authenticateToken, (0, auth_1.authorizeRoles)(shared_1.UserRole.VENDOR), reservationController_1.default.getRestaurantReservations);
+router.put('/:id/status', auth_1.authenticateToken, (0, auth_1.authorizeRoles)(shared_1.UserRole.VENDOR), reservationController_1.default.updateReservationStatus);
 exports.default = router;
 //# sourceMappingURL=reservationRoutes.js.map

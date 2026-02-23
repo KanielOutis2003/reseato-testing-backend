@@ -7,11 +7,11 @@ exports.AuthService = void 0;
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const database_1 = __importDefault(require("../config/database"));
-const types_1 = require("../../../shared/types");
+const shared_1 = require("../types/shared");
 const errorHandler_1 = require("../middleware/errorHandler");
 class AuthService {
     async register(data) {
-        const { email, password, firstName, lastName, phone, role = types_1.UserRole.CUSTOMER } = data;
+        const { email, password, firstName, lastName, phone, role = shared_1.UserRole.CUSTOMER } = data;
         // Check if user already exists
         const existingUser = await database_1.default.query('SELECT id FROM users WHERE email = $1', [email]);
         if (existingUser.rows.length > 0) {

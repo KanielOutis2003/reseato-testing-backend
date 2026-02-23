@@ -1,6 +1,6 @@
 import bcrypt from 'bcryptjs';
 import pool from '../config/database';
-import { UserRole } from '../../../shared/types';
+import { UserRole } from '../types/shared';
 
 const seed = async () => {
   const client = await pool.connect();

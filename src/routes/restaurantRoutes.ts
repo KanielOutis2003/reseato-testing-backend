@@ -1,7 +1,7 @@
 import express from 'express';
 import restaurantController from '../controllers/restaurantController';
 import { authenticateToken, authorizeRoles } from '../middleware/auth';
-import { UserRole } from '../../../shared/types';
+import { UserRole } from '../types/shared';
 
 const router = express.Router();
 

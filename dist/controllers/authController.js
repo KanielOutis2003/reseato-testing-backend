@@ -7,14 +7,14 @@ exports.loginValidation = exports.registerValidation = void 0;
 const express_validator_1 = require("express-validator");
 const authService_1 = __importDefault(require("../services/authService"));
 const errorHandler_1 = require("../middleware/errorHandler");
-const types_1 = require("../../../shared/types");
+const shared_1 = require("../types/shared");
 exports.registerValidation = [
     (0, express_validator_1.body)('email').isEmail().normalizeEmail().withMessage('Valid email is required'),
     (0, express_validator_1.body)('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
     (0, express_validator_1.body)('firstName').trim().notEmpty().withMessage('First name is required'),
     (0, express_validator_1.body)('lastName').trim().notEmpty().withMessage('Last name is required'),
     (0, express_validator_1.body)('phone').optional().isMobilePhone('any'),
-    (0, express_validator_1.body)('role').optional().isIn(Object.values(types_1.UserRole))
+    (0, express_validator_1.body)('role').optional().isIn(Object.values(shared_1.UserRole))
 ];
 exports.loginValidation = [
     (0, express_validator_1.body)('email').isEmail().normalizeEmail(),

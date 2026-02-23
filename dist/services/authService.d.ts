@@ -1,4 +1,4 @@
-import { User, UserRole } from '../../../shared/types';
+import { User, UserRole } from '../types/shared';
 interface RegisterData {
     email: string;
     password: string;

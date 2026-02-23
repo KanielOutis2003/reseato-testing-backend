@@ -4,7 +4,7 @@ import {
   ReservationStatus, 
   CreateReservationDTO,
   TimeSlot 
-} from '../../../shared/types';
+} from '../types/shared';
 import { AppError } from '../middleware/errorHandler';
 import { format, parse, addMinutes } from 'date-fns';
 import notificationService from './notificationService';
