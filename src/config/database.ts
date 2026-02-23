@@ -1,5 +1,11 @@
 import { Pool } from 'pg';
 import dotenv from 'dotenv';
+import dns from 'node:dns';
+
+// Force IPv4 resolution to avoid issues with some hosting providers (like Render) connecting to Supabase via IPv6
+if (dns.setDefaultResultOrder) {
+  dns.setDefaultResultOrder('ipv4first');
+}
 
 dotenv.config();
 

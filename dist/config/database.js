@@ -5,6 +5,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const pg_1 = require("pg");
 const dotenv_1 = __importDefault(require("dotenv"));
+const node_dns_1 = __importDefault(require("node:dns"));
+// Force IPv4 resolution to avoid issues with some hosting providers (like Render) connecting to Supabase via IPv6
+if (node_dns_1.default.setDefaultResultOrder) {
+    node_dns_1.default.setDefaultResultOrder('ipv4first');
+}
 dotenv_1.default.config();
 const isProduction = process.env.NODE_ENV === 'production' || !!process.env.RENDER;
 let pool;
