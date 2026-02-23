@@ -1,11 +1,5 @@
 import { Pool } from 'pg';
 import dotenv from 'dotenv';
-import dns from 'node:dns';
-
-// Force IPv4 resolution to avoid issues with some hosting providers (like Render) connecting to Supabase via IPv6
-if (dns.setDefaultResultOrder) {
-  dns.setDefaultResultOrder('ipv4first');
-}
 
 dotenv.config();
 
@@ -26,9 +20,7 @@ if (process.env.DATABASE_URL) {
     ssl: isProduction ? { rejectUnauthorized: false } : undefined,
     max: 20,
     idleTimeoutMillis: 30000,
-    connectionTimeoutMillis: 10000, // Increased timeout for cloud databases
-    // @ts-ignore - Force IPv4 for Supabase on Render
-    family: 4,
+    connectionTimeoutMillis: 10000,
   });
 } else {
   const host = process.env.DB_HOST || 'localhost';
@@ -43,9 +35,7 @@ if (process.env.DATABASE_URL) {
     ssl: isProduction ? { rejectUnauthorized: false } : undefined,
     max: 20,
     idleTimeoutMillis: 30000,
-    connectionTimeoutMillis: 10000, // Increased timeout for cloud databases
-    // @ts-ignore - Force IPv4 for Supabase on Render
-    family: 4,
+    connectionTimeoutMillis: 10000,
   });
 }
 

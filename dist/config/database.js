@@ -5,11 +5,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const pg_1 = require("pg");
 const dotenv_1 = __importDefault(require("dotenv"));
-const node_dns_1 = __importDefault(require("node:dns"));
-// Force IPv4 resolution to avoid issues with some hosting providers (like Render) connecting to Supabase via IPv6
-if (node_dns_1.default.setDefaultResultOrder) {
-    node_dns_1.default.setDefaultResultOrder('ipv4first');
-}
 dotenv_1.default.config();
 const isProduction = process.env.NODE_ENV === 'production' || !!process.env.RENDER;
 let pool;
@@ -27,9 +22,7 @@ if (process.env.DATABASE_URL) {
         ssl: isProduction ? { rejectUnauthorized: false } : undefined,
         max: 20,
         idleTimeoutMillis: 30000,
-        connectionTimeoutMillis: 10000, // Increased timeout for cloud databases
-        // @ts-ignore - Force IPv4 for Supabase on Render
-        family: 4,
+        connectionTimeoutMillis: 10000,
     });
 }
 else {
@@ -45,9 +38,7 @@ else {
         ssl: isProduction ? { rejectUnauthorized: false } : undefined,
         max: 20,
         idleTimeoutMillis: 30000,
-        connectionTimeoutMillis: 10000, // Increased timeout for cloud databases
-        // @ts-ignore - Force IPv4 for Supabase on Render
-        family: 4,
+        connectionTimeoutMillis: 10000,
     });
 }
 pool.on('connect', () => {

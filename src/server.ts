@@ -1,16 +1,11 @@
-import dns from 'node:dns';
 import app from './app';
 import pool from './config/database';
-
-// Force IPv4 resolution to avoid issues with some hosting providers (like Render) connecting to Supabase via IPv6
-if (dns.setDefaultResultOrder) {
-  dns.setDefaultResultOrder('ipv4first');
-}
 
 const PORT = process.env.PORT || 5000;
 
 const startServer = async () => {
   try {
+    console.log('🔄 Attempting to connect to database...');
     // Test database connection
     await pool.query('SELECT NOW()');
     console.log('✅ Database connection established');
@@ -22,9 +17,15 @@ const startServer = async () => {
       console.log(`🌐 Frontend URL: ${process.env.FRONTEND_URL}`);
     });
   } catch (error) {
-    console.error('❌ Failed to start server:', error);
+    console.error('❌ Failed to start server:', error instanceof Error ? error.message : error);
+    if (error instanceof Error && 'stack' in error) {
+      console.error(error.stack);
+    }
     process.exit(1);
   }
 };
 
-startServer();
+startServer().catch(err => {
+    console.error('❌ Unhandled startup error:', err);
+    process.exit(1);
+});
