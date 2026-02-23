@@ -26,7 +26,7 @@ if (process.env.DATABASE_URL) {
     ssl: isProduction ? { rejectUnauthorized: false } : undefined,
     max: 20,
     idleTimeoutMillis: 30000,
-    connectionTimeoutMillis: 2000,
+    connectionTimeoutMillis: 10000, // Increased timeout for cloud databases
     // @ts-ignore - Force IPv4 for Supabase on Render
     family: 4,
   });
@@ -43,7 +43,7 @@ if (process.env.DATABASE_URL) {
     ssl: isProduction ? { rejectUnauthorized: false } : undefined,
     max: 20,
     idleTimeoutMillis: 30000,
-    connectionTimeoutMillis: 2000,
+    connectionTimeoutMillis: 10000, // Increased timeout for cloud databases
     // @ts-ignore - Force IPv4 for Supabase on Render
     family: 4,
   });
