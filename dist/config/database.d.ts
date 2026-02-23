@@ -1,4 +1,4 @@
 import { Pool } from 'pg';
-declare const pool: Pool;
+declare let pool: Pool;
 export default pool;
 //# sourceMappingURL=database.d.ts.map

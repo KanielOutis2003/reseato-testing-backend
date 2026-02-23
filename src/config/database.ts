@@ -8,6 +8,13 @@ const isProduction = process.env.NODE_ENV === 'production' || !!process.env.REND
 let pool: Pool;
 
 if (process.env.DATABASE_URL) {
+  try {
+    const u = new URL(process.env.DATABASE_URL);
+    const host = `${u.hostname}:${u.port || '5432'}`;
+    console.log(`🔌 DB config: using DATABASE_URL -> ${host} ssl=${isProduction ? 'on' : 'off'}`);
+  } catch {
+    console.log(`🔌 DB config: using DATABASE_URL (host parse failed) ssl=${isProduction ? 'on' : 'off'}`);
+  }
   pool = new Pool({
     connectionString: process.env.DATABASE_URL,
     ssl: isProduction ? { rejectUnauthorized: false } : undefined,
@@ -16,9 +23,12 @@ if (process.env.DATABASE_URL) {
     connectionTimeoutMillis: 2000,
   });
 } else {
+  const host = process.env.DB_HOST || 'localhost';
+  const port = parseInt(process.env.DB_PORT || '5432');
+  console.log(`🔌 DB config: using discrete vars -> ${host}:${port} ssl=${isProduction ? 'on' : 'off'}`);
   pool = new Pool({
-    host: process.env.DB_HOST || 'localhost',
-    port: parseInt(process.env.DB_PORT || '5432'),
+    host,
+    port,
     database: process.env.DB_NAME,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,

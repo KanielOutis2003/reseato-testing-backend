@@ -31,7 +31,7 @@ class AuthController {
                 });
             }
             const { user, token } = await authService_1.default.register(req.body);
-            res.status(201).json({
+            return res.status(201).json({
                 success: true,
                 data: {
                     user,
@@ -49,7 +49,7 @@ class AuthController {
                 });
             }
             const { user, token } = await authService_1.default.login(req.body);
-            res.json({
+            return res.json({
                 success: true,
                 data: {
                     user,
@@ -60,14 +60,22 @@ class AuthController {
         });
         this.getProfile = (0, errorHandler_1.asyncHandler)(async (req, res) => {
             const user = await authService_1.default.getUserById(req.user.id);
-            res.json({
+            return res.json({
                 success: true,
                 data: user
             });
         });
-        this.logout = (0, errorHandler_1.asyncHandler)(async (req, res) => {
+        this.updateProfile = (0, errorHandler_1.asyncHandler)(async (req, res) => {
+            const user = await authService_1.default.updateProfile(req.user.id, req.body);
+            return res.json({
+                success: true,
+                data: user,
+                message: 'Profile updated successfully'
+            });
+        });
+        this.logout = (0, errorHandler_1.asyncHandler)(async (_req, res) => {
             // Since we're using JWT, logout is handled client-side by removing the token
-            res.json({
+            return res.json({
                 success: true,
                 message: 'Logged out successfully'
             });

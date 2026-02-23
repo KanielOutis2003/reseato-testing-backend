@@ -16,7 +16,7 @@ class RestaurantController {
                 openNow: req.query.openNow === 'true'
             };
             const restaurants = await restaurantService_1.default.getAllRestaurants(filters);
-            res.json({
+            return res.json({
                 success: true,
                 data: restaurants,
                 count: restaurants.length
@@ -30,7 +30,7 @@ class RestaurantController {
                     error: 'Restaurant not found'
                 });
             }
-            res.json({
+            return res.json({
                 success: true,
                 data: restaurant
             });
@@ -44,14 +44,14 @@ class RestaurantController {
                     error: 'No restaurant found for this vendor'
                 });
             }
-            res.json({
+            return res.json({
                 success: true,
                 data: restaurant
             });
         });
         this.createRestaurant = (0, errorHandler_1.asyncHandler)(async (req, res) => {
             const restaurant = await restaurantService_1.default.createRestaurant(req.user.id, req.body);
-            res.status(201).json({
+            return res.status(201).json({
                 success: true,
                 data: restaurant,
                 message: 'Restaurant created successfully. Awaiting admin approval.'
@@ -59,7 +59,7 @@ class RestaurantController {
         });
         this.updateRestaurant = (0, errorHandler_1.asyncHandler)(async (req, res) => {
             const restaurant = await restaurantService_1.default.updateRestaurant(req.params.id, req.user.id, req.body);
-            res.json({
+            return res.json({
                 success: true,
                 data: restaurant,
                 message: 'Restaurant updated successfully'
@@ -67,7 +67,7 @@ class RestaurantController {
         });
         this.getTables = (0, errorHandler_1.asyncHandler)(async (req, res) => {
             const tables = await restaurantService_1.default.getTables(req.params.id);
-            res.json({
+            return res.json({
                 success: true,
                 data: tables
             });
@@ -75,7 +75,7 @@ class RestaurantController {
         this.addTable = (0, errorHandler_1.asyncHandler)(async (req, res) => {
             const { tableNumber, capacity } = req.body;
             const table = await restaurantService_1.default.addTable(req.params.id, tableNumber, capacity);
-            res.status(201).json({
+            return res.status(201).json({
                 success: true,
                 data: table,
                 message: 'Table added successfully'

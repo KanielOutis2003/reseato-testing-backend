@@ -21,6 +21,7 @@ export declare class AuthService {
         token: string;
     }>;
     getUserById(id: string): Promise<User | null>;
+    updateProfile(userId: string, data: Partial<User>): Promise<User>;
     private generateToken;
     private mapUser;
 }

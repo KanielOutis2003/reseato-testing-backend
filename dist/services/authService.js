@@ -52,12 +52,26 @@ class AuthService {
         }
         return this.mapUser(result.rows[0]);
     }
+    async updateProfile(userId, data) {
+        const { firstName, lastName, phone } = data;
+        const result = await database_1.default.query(`UPDATE users 
+       SET first_name = COALESCE($1, first_name),
+           last_name = COALESCE($2, last_name),
+           phone = COALESCE($3, phone),
+           updated_at = NOW()
+       WHERE id = $4
+       RETURNING id, email, first_name, last_name, phone, role, created_at, updated_at`, [firstName, lastName, phone, userId]);
+        if (result.rows.length === 0) {
+            throw new errorHandler_1.AppError('User not found', 404);
+        }
+        return this.mapUser(result.rows[0]);
+    }
     generateToken(user) {
         return jsonwebtoken_1.default.sign({
             id: user.id,
             email: user.email,
             role: user.role
-        }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN || '7d' });
+        }, process.env.JWT_SECRET, { expiresIn: (process.env.JWT_EXPIRES_IN || '7d') });
     }
     mapUser(row) {
         return {

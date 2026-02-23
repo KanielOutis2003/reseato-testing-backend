@@ -27,7 +27,7 @@ class ReservationController {
                 });
             }
             const reservation = await reservationService_1.default.createReservation(req.user.id, req.body);
-            res.status(201).json({
+            return res.status(201).json({
                 success: true,
                 data: reservation,
                 message: 'Reservation created successfully'
@@ -35,14 +35,14 @@ class ReservationController {
         });
         this.getMyReservations = (0, errorHandler_1.asyncHandler)(async (req, res) => {
             const reservations = await reservationService_1.default.getCustomerReservations(req.user.id);
-            res.json({
+            return res.json({
                 success: true,
                 data: reservations
             });
         });
         this.cancelReservation = (0, errorHandler_1.asyncHandler)(async (req, res) => {
             const reservation = await reservationService_1.default.cancelReservation(req.params.id, req.user.id);
-            res.json({
+            return res.json({
                 success: true,
                 data: reservation,
                 message: 'Reservation cancelled successfully'
@@ -58,7 +58,7 @@ class ReservationController {
                 });
             }
             const timeSlots = await reservationService_1.default.getAvailableTimeSlots(restaurantId, date, parseInt(guestCount));
-            res.json({
+            return res.json({
                 success: true,
                 data: timeSlots
             });
@@ -68,7 +68,7 @@ class ReservationController {
             const { restaurantId } = req.params;
             const { date } = req.query;
             const reservations = await reservationService_1.default.getRestaurantReservations(restaurantId, date);
-            res.json({
+            return res.json({
                 success: true,
                 data: reservations
             });
@@ -83,7 +83,7 @@ class ReservationController {
             }
             const reservation = await reservationService_1.default.updateReservationStatus(req.params.id, status, req.user.id // Pass vendor ID for authorization
             );
-            res.json({
+            return res.json({
                 success: true,
                 data: reservation,
                 message: 'Reservation status updated successfully'

@@ -10,7 +10,7 @@ class AppError extends Error {
     }
 }
 exports.AppError = AppError;
-const errorHandler = (err, req, res, next) => {
+const errorHandler = (err, _req, res, _next) => {
     if (err instanceof AppError) {
         return res.status(err.statusCode).json({
             success: false,

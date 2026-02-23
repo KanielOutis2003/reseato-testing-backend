@@ -9,6 +9,9 @@ const dotenv_1 = __importDefault(require("dotenv"));
 const authRoutes_1 = __importDefault(require("./routes/authRoutes"));
 const restaurantRoutes_1 = __importDefault(require("./routes/restaurantRoutes"));
 const reservationRoutes_1 = __importDefault(require("./routes/reservationRoutes"));
+const adminRoutes_1 = __importDefault(require("./routes/adminRoutes"));
+const paymentRoutes_1 = __importDefault(require("./routes/paymentRoutes"));
+const notificationRoutes_1 = __importDefault(require("./routes/notificationRoutes"));
 const errorHandler_1 = require("./middleware/errorHandler");
 dotenv_1.default.config();
 const app = (0, express_1.default)();
@@ -20,13 +23,16 @@ app.use((0, cors_1.default)({
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
 // Health check
-app.get('/health', (req, res) => {
+app.get('/health', (_req, res) => {
     res.json({ status: 'OK', message: 'RESEATO API is running' });
 });
 // API Routes
 app.use('/api/auth', authRoutes_1.default);
 app.use('/api/restaurants', restaurantRoutes_1.default);
 app.use('/api/reservations', reservationRoutes_1.default);
+app.use('/api/admin', adminRoutes_1.default);
+app.use('/api/payments', paymentRoutes_1.default);
+app.use('/api/notifications', notificationRoutes_1.default);
 // Error handling middleware (must be last)
 app.use(errorHandler_1.errorHandler);
 exports.default = app;

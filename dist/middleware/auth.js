@@ -17,10 +17,10 @@ const authenticateToken = (req, res, next) => {
     try {
         const decoded = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);
         req.user = decoded;
-        next();
+        return next();
     }
     catch (error) {
-        return res.status(403).json({
+        return res.status(401).json({
             success: false,
             error: 'Invalid or expired token'
         });
@@ -41,7 +41,7 @@ const authorizeRoles = (...roles) => {
                 error: 'You do not have permission to access this resource'
             });
         }
-        next();
+        return next();
     };
 };
 exports.authorizeRoles = authorizeRoles;

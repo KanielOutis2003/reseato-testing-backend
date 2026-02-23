@@ -45,6 +45,7 @@ router.post('/register', authController_1.registerValidation, authController_1.d
 router.post('/login', authController_1.loginValidation, authController_1.default.login);
 // Protected routes
 router.get('/profile', auth_1.authenticateToken, authController_1.default.getProfile);
+router.put('/profile', auth_1.authenticateToken, authController_1.default.updateProfile);
 router.post('/logout', auth_1.authenticateToken, authController_1.default.logout);
 exports.default = router;
 //# sourceMappingURL=authRoutes.js.map
