@@ -3,8 +3,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const node_dns_1 = __importDefault(require("node:dns"));
 const app_1 = __importDefault(require("./app"));
 const database_1 = __importDefault(require("./config/database"));
+// Force IPv4 resolution to avoid issues with some hosting providers (like Render) connecting to Supabase via IPv6
+if (node_dns_1.default.setDefaultResultOrder) {
+    node_dns_1.default.setDefaultResultOrder('ipv4first');
+}
 const PORT = process.env.PORT || 5000;
 const startServer = async () => {
     try {

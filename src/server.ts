@@ -1,5 +1,11 @@
+import dns from 'node:dns';
 import app from './app';
 import pool from './config/database';
+
+// Force IPv4 resolution to avoid issues with some hosting providers (like Render) connecting to Supabase via IPv6
+if (dns.setDefaultResultOrder) {
+  dns.setDefaultResultOrder('ipv4first');
+}
 
 const PORT = process.env.PORT || 5000;
 
