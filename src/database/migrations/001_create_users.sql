@@ -1,6 +1,11 @@
--- Create ENUM type for user roles
+-- Create ENUM type for user roles safely
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
-CREATE TYPE user_role AS ENUM ('customer', 'vendor', 'admin');
+
+DO $$ BEGIN
+    CREATE TYPE user_role AS ENUM ('customer', 'vendor', 'admin');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
 
 -- Create users table
 CREATE TABLE IF NOT EXISTS users (

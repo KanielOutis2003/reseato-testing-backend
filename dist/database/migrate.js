@@ -19,7 +19,19 @@ const migrate = async () => {
       );
     `);
         // Get list of migration files
-        const migrationsDir = path_1.default.join(__dirname, 'migrations');
+        let migrationsDir = path_1.default.join(__dirname, 'migrations');
+        // Check if migrations dir exists in current location (dist), if not check src
+        if (!fs_1.default.existsSync(migrationsDir)) {
+            migrationsDir = path_1.default.join(process.cwd(), 'src', 'database', 'migrations');
+            console.log(`📂 Migrations not found in dist, checking: ${migrationsDir}`);
+        }
+        else {
+            console.log(`📂 Found migrations in: ${migrationsDir}`);
+        }
+        if (!fs_1.default.existsSync(migrationsDir)) {
+            console.error(`❌ Migrations directory not found at: ${migrationsDir}`);
+            process.exit(1);
+        }
         const files = fs_1.default.readdirSync(migrationsDir)
             .filter(file => file.endsWith('.sql'))
             .sort();
@@ -57,8 +69,14 @@ const migrate = async () => {
     }
     finally {
         client.release();
-        await database_1.default.end();
+        // Only close pool if running as a standalone script
+        if (require.main === module) {
+            await database_1.default.end();
+        }
     }
 };
-migrate();
+if (require.main === module) {
+    migrate();
+}
+exports.default = migrate;
 //# sourceMappingURL=migrate.js.map

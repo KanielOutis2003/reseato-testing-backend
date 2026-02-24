@@ -1,7 +1,19 @@
 import app from './app';
 import pool from './config/database';
+import migrate from './database/migrate';
 
 const PORT = process.env.PORT || 5000;
+
+// Verify critical environment variables
+if (!process.env.JWT_SECRET) {
+  console.error('❌ JWT_SECRET is missing! Please set it in your environment variables.');
+  process.exit(1);
+}
+
+if (!process.env.DATABASE_URL && (!process.env.DB_HOST || !process.env.DB_USER || !process.env.DB_PASSWORD)) {
+  console.error('❌ Database configuration is missing! Please set DATABASE_URL or discrete DB variables.');
+  process.exit(1);
+}
 
 const startServer = async () => {
   try {
@@ -9,6 +21,11 @@ const startServer = async () => {
     // Test database connection
     await pool.query('SELECT NOW()');
     console.log('✅ Database connection established');
+
+    // Run migrations
+    console.log('🔄 Running database migrations...');
+    await migrate();
+    console.log('✅ Database migrations completed');
 
     // Start server
     app.listen(PORT, () => {
