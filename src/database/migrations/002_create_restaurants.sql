@@ -1,3 +1,11 @@
+
+-- 002_create_restaurants.sql
+
+-- Enable extensions needed for gen_random_uuid() and ll_to_earth()
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+CREATE EXTENSION IF NOT EXISTS cube;
+CREATE EXTENSION IF NOT EXISTS earthdistance;
+
 -- Create restaurants table
 CREATE TABLE IF NOT EXISTS restaurants (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -6,8 +14,8 @@ CREATE TABLE IF NOT EXISTS restaurants (
     description TEXT,
     cuisine_type VARCHAR(100) NOT NULL,
     address TEXT NOT NULL,
-    latitude DECIMAL(10, 8),
-    longitude DECIMAL(11, 8),
+    latitude DOUBLE PRECISION,
+    longitude DOUBLE PRECISION,
     phone VARCHAR(20) NOT NULL,
     email VARCHAR(255) NOT NULL,
     opening_time TIME NOT NULL,
@@ -15,24 +23,41 @@ CREATE TABLE IF NOT EXISTS restaurants (
     rating DECIMAL(3, 2) DEFAULT 0.00,
     total_reviews INTEGER DEFAULT 0,
     is_active BOOLEAN DEFAULT true,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Create indexes
-CREATE INDEX idx_restaurants_owner ON restaurants(owner_id);
-CREATE INDEX idx_restaurants_cuisine ON restaurants(cuisine_type);
-CREATE INDEX idx_restaurants_rating ON restaurants(rating DESC);
-CREATE INDEX idx_restaurants_active ON restaurants(is_active);
-CREATE INDEX idx_restaurants_location ON restaurants USING gist(
-    ll_to_earth(latitude, longitude)
-);
+-- Create indexes (idempotent)
+CREATE INDEX IF NOT EXISTS idx_restaurants_owner
+  ON restaurants(owner_id);
 
--- Create trigger for updated_at
-CREATE TRIGGER update_restaurants_updated_at
-    BEFORE UPDATE ON restaurants
-    FOR EACH ROW
-    EXECUTE FUNCTION update_updated_at_column();
+CREATE INDEX IF NOT EXISTS idx_restaurants_cuisine
+  ON restaurants(cuisine_type);
+
+CREATE INDEX IF NOT EXISTS idx_restaurants_rating
+  ON restaurants(rating DESC);
+
+CREATE INDEX IF NOT EXISTS idx_restaurants_active
+  ON restaurants(is_active);
+
+-- Location index (requires cube + earthdistance)
+-- Using ll_to_earth(lat, lng) gives fast "within distance" searches
+CREATE INDEX IF NOT EXISTS idx_restaurants_location
+  ON restaurants
+  USING gist (ll_to_earth(latitude, longitude));
+
+-- Trigger for updated_at (assumes update_updated_at_column() exists from an earlier migration)
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_trigger WHERE tgname = 'update_restaurants_updated_at'
+  ) THEN
+    CREATE TRIGGER update_restaurants_updated_at
+      BEFORE UPDATE ON restaurants
+      FOR EACH ROW
+      EXECUTE FUNCTION update_updated_at_column();
+  END IF;
+END $$;
 
 -- Create restaurant_images table
 CREATE TABLE IF NOT EXISTS restaurant_images (
@@ -40,8 +65,11 @@ CREATE TABLE IF NOT EXISTS restaurant_images (
     restaurant_id UUID NOT NULL REFERENCES restaurants(id) ON DELETE CASCADE,
     image_url TEXT NOT NULL,
     is_primary BOOLEAN DEFAULT false,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_restaurant_images_restaurant ON restaurant_images(restaurant_id);
-CREATE INDEX idx_restaurant_images_primary ON restaurant_images(is_primary);
+CREATE INDEX IF NOT EXISTS idx_restaurant_images_restaurant
+  ON restaurant_images(restaurant_id);
+
+CREATE INDEX IF NOT EXISTS idx_restaurant_images_primary
+  ON restaurant_images(is_primary);
