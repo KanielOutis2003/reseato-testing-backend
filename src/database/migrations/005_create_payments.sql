@@ -1,22 +1,42 @@
--- Create ENUM type for payment status
-CREATE TYPE payment_status AS ENUM ('pending', 'completed', 'failed', 'refunded');
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+    FROM pg_type t
+    JOIN pg_namespace n ON n.oid = t.typnamespace
+    WHERE t.typname = 'payment_status'
+      AND n.nspname = 'public'
+  ) THEN
+    CREATE TYPE public.payment_status AS ENUM ('pending', 'paid', 'failed', 'refunded', 'cancelled');
+  END IF;
+END $$;
 
--- Create payments table
+-- Example (adjust columns to your design)
 CREATE TABLE IF NOT EXISTS payments (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    reservation_id UUID NOT NULL REFERENCES reservations(id) ON DELETE CASCADE,
-    amount DECIMAL(10, 2) NOT NULL,
-    payment_method VARCHAR(50) NOT NULL,
-    payment_status payment_status NOT NULL DEFAULT 'pending',
-    transaction_id VARCHAR(255),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  reservation_id UUID NOT NULL REFERENCES reservations(id) ON DELETE CASCADE,
+  amount DECIMAL(10,2) NOT NULL,
+  status public.payment_status NOT NULL DEFAULT 'pending',
+  payment_method VARCHAR(50),
+  reference_no VARCHAR(100),
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Create indexes
-CREATE INDEX idx_payments_reservation ON payments(reservation_id);
-CREATE INDEX idx_payments_status ON payments(payment_status);
-CREATE INDEX idx_payments_transaction ON payments(transaction_id);
+CREATE INDEX IF NOT EXISTS idx_payments_reservation_id ON payments(reservation_id);
+CREATE INDEX IF NOT EXISTS idx_payments_status ON payments(status);
 
--- Ensure one payment per reservation
-CREATE UNIQUE INDEX idx_one_payment_per_reservation 
-ON payments(reservation_id);
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+    FROM pg_enum e
+    JOIN pg_type t ON t.oid = e.enumtypid
+    JOIN pg_namespace n ON n.oid = t.typnamespace
+    WHERE t.typname = 'payment_status'
+      AND n.nspname = 'public'
+      AND e.enumlabel = 'refunded'
+  ) THEN
+    ALTER TYPE public.payment_status ADD VALUE 'refunded';
+  END IF;
+END $$;
