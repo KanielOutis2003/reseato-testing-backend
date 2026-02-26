@@ -1,12 +1,11 @@
-
 -- 002_create_restaurants.sql
 
--- Enable extensions needed for gen_random_uuid() and ll_to_earth()
+-- Extensions (safe if already enabled)
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 CREATE EXTENSION IF NOT EXISTS cube;
 CREATE EXTENSION IF NOT EXISTS earthdistance;
 
--- Create restaurants table
+-- 1) Create table (initial definition)
 CREATE TABLE IF NOT EXISTS restaurants (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     owner_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -27,7 +26,13 @@ CREATE TABLE IF NOT EXISTS restaurants (
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Create indexes (idempotent)
+-- 2) If restaurants table already existed from a previous run,
+-- ensure latitude/longitude exist before creating indexes
+ALTER TABLE restaurants
+  ADD COLUMN IF NOT EXISTS latitude DOUBLE PRECISION,
+  ADD COLUMN IF NOT EXISTS longitude DOUBLE PRECISION;
+
+-- 3) Create indexes (idempotent)
 CREATE INDEX IF NOT EXISTS idx_restaurants_owner
   ON restaurants(owner_id);
 
@@ -40,18 +45,29 @@ CREATE INDEX IF NOT EXISTS idx_restaurants_rating
 CREATE INDEX IF NOT EXISTS idx_restaurants_active
   ON restaurants(is_active);
 
--- Location index (requires cube + earthdistance)
--- Using ll_to_earth(lat, lng) gives fast "within distance" searches
-CREATE INDEX IF NOT EXISTS idx_restaurants_location
-  ON restaurants
-  USING gist (ll_to_earth(latitude, longitude));
-
--- Trigger for updated_at (assumes update_updated_at_column() exists from an earlier migration)
+-- 4) Location index only if both columns exist
 DO $$
 BEGIN
-  IF NOT EXISTS (
-    SELECT 1 FROM pg_trigger WHERE tgname = 'update_restaurants_updated_at'
+  IF EXISTS (
+    SELECT 1
+    FROM information_schema.columns
+    WHERE table_name = 'restaurants' AND column_name = 'latitude'
+  )
+  AND EXISTS (
+    SELECT 1
+    FROM information_schema.columns
+    WHERE table_name = 'restaurants' AND column_name = 'longitude'
   ) THEN
+    EXECUTE 'CREATE INDEX IF NOT EXISTS idx_restaurants_location
+             ON restaurants
+             USING gist (ll_to_earth(latitude, longitude))';
+  END IF;
+END $$;
+
+-- 5) updated_at trigger (create only if missing)
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'update_restaurants_updated_at') THEN
     CREATE TRIGGER update_restaurants_updated_at
       BEFORE UPDATE ON restaurants
       FOR EACH ROW
@@ -59,7 +75,7 @@ BEGIN
   END IF;
 END $$;
 
--- Create restaurant_images table
+-- 6) restaurant_images table + indexes
 CREATE TABLE IF NOT EXISTS restaurant_images (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     restaurant_id UUID NOT NULL REFERENCES restaurants(id) ON DELETE CASCADE,
